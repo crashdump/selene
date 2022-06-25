@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "selene"
+version = "0.1.0"
+description = "Control things in your house from a StreamDeck."
+authors = ["Adrien P. <ap@cdfr.net>"]
+repository = "https://github.com/crashdump/selene"
+readme = "README.md"
+license = "MIT"
+keywords = [
+    "StreamDeck",
+    "Home Automation",
+    "Spotify",
+    "Hue"
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.8"
+streamdeck = "^0.9.1"
+Pillow = "^9.1.1"
+pluggy = "^1.0.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+run = "selene.main:main"
+
+[tool.poetry.urls]
+issues = "https://github.com/crashdump/selene/issues"
