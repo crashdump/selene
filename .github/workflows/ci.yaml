@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+
+jobs:
+  test:
+    name: "test"
+    runs-on:  ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+          architecture: x64
+
+      - uses: Gr1N/setup-poetry@v7
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+
+      - run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - run: |
+          poetry run python -m pytest -v --cov=src/ tests/
+          poetry run python -m coverage report -m;
+          poetry run python -m coverage xml
+        env:
+          PYTHONPATH: "src/"

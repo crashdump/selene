@@ -3,9 +3,25 @@ Selene
 
 Control things in your house from a StreamDeck. 
 
+![Selene](https://media.githubusercontent.com/media/crashdump/selene/main/docs/imgs/selene.jpeg)
+
 This is mainly used to control the ambiance in my young daughter's room through a StreamDeck and a Raspberry PI. While
 most of the actions, settings and icons are currently hardcoded, it may prove useful to someone else, hence I am
 sharing it.
+
+# Batteries Included
+
+## Hue
+
+Turn on (or off) lights; a timer can be specified to revert after a while.
+
+## Spotify
+
+Starts a playlist; a timer can be specified to turn the music off after a while.
+
+# Plugins
+
+All actions, such as Hue or Spotify, are simple modules and writing your own should be easy.
 
 # Prerequisites
 

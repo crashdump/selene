@@ -71,7 +71,7 @@ CONFIG = {
             "actions": {}
         }
     },
-    "stop_button": {
+    "g": {
         "icon": {
             "up": "stop",
             "down": "stop"

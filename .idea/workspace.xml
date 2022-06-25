@@ -5,45 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="60b7db74-2d08-4da0-9e10-bb20fb123db2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/selene.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sshConfigs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/webResources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/webServers.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/poetry.lock" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/action.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/assets/fonts/roboto-regular.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/assets/icons/empty.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/assets/icons/relax.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/assets/icons/sleep.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/assets/icons/stop.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/assets/icons/sunrise.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/assets/icons/zzz.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/plugins/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/plugins/echo/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/plugins/echo/echo.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/plugins/hue/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/plugins/hue/hue.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/plugins/specs.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/plugins/spotify/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/plugins/spotify/spotify.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/render.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/selene.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/selene/timer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,7 +113,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1656064074668</updated>
-      <workItem from="1656064077829" duration="33141000" />
+      <workItem from="1656064077829" duration="34505000" />
     </task>
     <servers />
   </component>
