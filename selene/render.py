@@ -18,3 +18,5 @@ def key_image(deck, icon_filename, font_filename, label_text):
 
     return PILHelper.to_native_format(deck, image)
 
+
+

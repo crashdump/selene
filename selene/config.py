@@ -1,4 +1,5 @@
 import os
+from logger import logger
 
 ASSETS_PATH = os.path.join(os.path.dirname(__file__), "assets")
 
@@ -6,36 +7,19 @@ CONFIG = {
     "deck_id": 0,
     "brightness": 30,
     "font": "roboto-regular",
-    "buttons": {
+    "keys": {
         0: {
             "icon": {
                 "up": "sunrise",
                 "down": "sunrise"
             },
             "label": "Sunrise",
+            "duration": 30,
             "actions": {
-                "spotify": {
-                    "state": "on",
-                    "timer": 30,
-                    "config": {
-                        "song": "abcd",
-                    }
+                "hue.Hue()": {
+                    "light": "abcd",
+                    "brightness": "30"
                 },
-                "hue": {
-                    "state": "on",
-                    "timer": 30,
-                    "config": {
-                        "light": "abcd",
-                        "brightness": "30"
-                    }
-                },
-                "echo": {
-                    "state": "on",
-                    "timer": 30,
-                    "config": {
-                        "message": "Hello World!"
-                    }
-                }
             }
         },
         1: {
@@ -44,7 +28,12 @@ CONFIG = {
                 "down": "relax"
             },
             "label": "Relax",
-            "actions": {}
+            "duration": 10,
+            "actions": {
+                "echo.Echo()": {
+                    "message": "Hello, world!",
+                },
+            }
         },
         2: {
             "icon": {
@@ -52,13 +41,19 @@ CONFIG = {
                 "down": "sleep"
             },
             "label": "Sleep",
-            "actions": {}
+            "duration": 30,
+            "actions": {
+                "sonos.Sonos()": {
+                    "share_link": "https://open.spotify.com/playlist/7J2yJ5L2SBDyaTwmByhnxC",
+                },
+            }
         },
         3: {
             "icon": {
                 "up": "empty",
                 "down": "empty"
             },
+            "duration": 0,
             "label": "",
             "actions": {}
         },
@@ -68,42 +63,49 @@ CONFIG = {
                 "down": "empty"
             },
             "label": "",
+            "duration": 0,
+            "actions": {}
+        },
+        5: {
+            "icon": {
+                "up": "empty",
+                "down": "empty"
+            },
+            "label": "",
+            "duration": 0,
             "actions": {}
         }
     },
-    "g": {
-        "icon": {
-            "up": "stop",
-            "down": "stop"
+    "actions": {
+        "sonos.Sonos()": {
+            "ip": "192.168.1.229",
+            "volume": 20,
+            "status_light": True,
         },
-        "label": "Stop",
-        "actions": {
-            "spotify": {
-                "state": "off"
-            },
-            "hue": {
-                "state": "off"
-            },
+        "hue.Hue()": {
+            "foo": "bar"
         }
-    }
+    },
 }
 
 
 def check_config(config: dict, deck_button_count: int) -> bool:
-    keys = ["deck_id", "brightness", "font", "buttons"]
-    for k in keys:
-        if not k in config.keys():
-            print("Please configure `{}`".format(k))
+    keys = ["deck_id", "brightness", "font", "keys"]
+    for key in keys:
+        if key not in config.keys():
+            logger.error("Please configure `{}`".format(key))
             return False
 
-    c = deck_button_count - 1  # Last one is for the stop button
-    for i in range(0, c):
-        if not config["buttons"][i]:
-            print("Please configure all {} buttons".format(c))
-            return False
+    if len(config["keys"]) != deck_button_count:
+        logger.error("This deck has {} keys, please configure them all.".format(deck_button_count))
+        return False
 
-        if "icon" not in config["buttons"][i]:
-            print("Please configure `icon` for button {}".format(c))
+    for k, v in config["keys"].items():
+        if "duration" not in v:
+            logger.error("Please configure `duration` for key {}".format(k))
+            return False
+        if "icon" not in v:
+            logger.error("Please configure `icon` for key {}".format(k))
             return False
 
     return True

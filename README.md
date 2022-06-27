@@ -19,6 +19,9 @@ Turn on (or off) lights; a timer can be specified to revert after a while.
 
 Starts a playlist; a timer can be specified to turn the music off after a while.
 
+You will need to register your app at [My Dashboard](https://developer.spotify.com/dashboard/) to get the credentials
+necessary to make authorized calls (a client id and client secret).
+
 # Plugins
 
 All actions, such as Hue or Spotify, are simple modules and writing your own should be easy.

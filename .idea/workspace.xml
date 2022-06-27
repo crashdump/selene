@@ -6,12 +6,25 @@
   <component name="ChangeListManager">
     <list default="true" id="60b7db74-2d08-4da0-9e10-bb20fb123db2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selene/action.py" beforeDir="false" afterPath="$PROJECT_DIR$/selene/action.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selene/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/selene/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selene/log.py" beforeDir="false" afterPath="$PROJECT_DIR$/selene/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selene/plugins/actions/echo.py" beforeDir="false" afterPath="$PROJECT_DIR$/selene/plugins/actions/echo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selene/render.py" beforeDir="false" afterPath="$PROJECT_DIR$/selene/render.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selene/selene.py" beforeDir="false" afterPath="$PROJECT_DIR$/selene/selene.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selene/timer.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -39,7 +52,7 @@
     "WebServerToolWindowPanel.toolwindow.show.date": "false",
     "WebServerToolWindowPanel.toolwindow.show.permissions": "false",
     "WebServerToolWindowPanel.toolwindow.show.size": "false",
-    "com.google.cloudcode.ide_session_index": "20220625_0012",
+    "com.google.cloudcode.ide_session_index": "20220628_0003",
     "last_opened_file_path": "/Users/adrien.pujol/Code/selene/selene/plugins/spotify",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -56,6 +69,7 @@
       <recent name="$PROJECT_DIR$/selene/plugins/echo" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/selene/plugins/actions" />
       <recent name="$PROJECT_DIR$/selene/plugins" />
       <recent name="$PROJECT_DIR$/selene" />
     </key>
@@ -113,7 +127,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1656064074668</updated>
-      <workItem from="1656064077829" duration="34505000" />
+      <workItem from="1656064077829" duration="69517000" />
+      <workItem from="1656425755595" duration="2338000" />
     </task>
     <servers />
   </component>

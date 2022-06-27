@@ -1,24 +1,35 @@
 #!/usr/bin/env python3
 
+# External
 import os
+import asyncio
 import threading
-import pluggy
 from StreamDeck.DeviceManager import DeviceManager
 
+# Internal
 from config import ASSETS_PATH, CONFIG, check_config
-import timer
+from logger import logger
+import action
 import render
-from plugins.specs import PluginSpecs
+
+# Plugins
+from plugins.specs import Hooks
+import plugins.actions
 
 
 class Selene:
     def __init__(self):
         self.stop_button_id = 0
         self.streamdecks = DeviceManager().enumerate()
-        print("Found {} Stream Deck(s).\n".format(len(self.streamdecks)))
+        logger.info("Found {} Stream Deck(s).\n".format(len(self.streamdecks)))
 
-        self.plugins = pluggy.PluginManager("selene_v1")
-        self.ct = timer.Timer(1)
+        self.keys = {}
+
+    def __update_all_keys(self, loop, deck):
+        for button_id, button_config in CONFIG["keys"].items():
+            self.__update_key_image(button_id, button_config, deck, False)
+
+        loop.call_later(1, self.__update_all_keys, (loop, deck))
 
     # Returns styling information for a key based on its name, position and state.
     def __get_key_style(self, button_id, button_config, state):
@@ -27,12 +38,10 @@ class Selene:
         label = button_config["label"]
         if state:
             icon = "icons/{}.png".format(button_config["icon"]["up"])
-            # label = countdown here
 
-        if button_id == self.stop_button_id:
-            label = "Stop"
-            if self.ct.state:
-                label = "{} s".format(self.ct.countdown)
+        # if button_id == self.stop_button_id:
+        #     if self.ticker_stop.state and self.ticker_stop.countdown > 0:
+        #         label = "{} s".format(self.ticker_stop.countdown)
 
         return {
             "name": button_id,
@@ -54,64 +63,56 @@ class Selene:
         with deck:
             deck.set_key_image(button_id, image)
 
-    def __update_stop_button_image(self, deck, state):
-        self.__update_key_image(self.stop_button_id, CONFIG["stop_button"], deck, state)
-
     # Prints key state change information, updates rhe key image and performs any
     # associated actions when a key is pressed.
     def __key_change_callback(self, deck, key, state):
-        print("Deck {} Key {} = {}".format(deck.id(), key, state), flush=True)
+        logger.info("Deck {} Key {} = {}".format(deck.id(), key, state))
 
         # Update the key image based on the new key state.
-        self.__update_key_image(key, CONFIG["buttons"][key], deck, state)
+        self.__update_key_image(key, CONFIG["keys"][key], deck, state)
 
         # Do thing when a key is changing to the pressed state.
         if state:
-            # echo = action_echo
-            self.ct = timer.Timer(10)
-            self.ct.set_tick_callback(self.__update_stop_button_image, (deck, state))
-            self.ct.start()
-
-            # Do the thing here.
-
-    def load_plugins(self, plugins: list):
-        self.plugins.add_hookspecs(PluginSpecs)
-        for plugin in plugins:
-            self.plugins.register(plugin)
-
-        print(self.plugins.list_plugin_distinfo())
-        print(self.plugins.list_name_plugin())
+            self.keys[key].toggle()
 
     def run(self):
         if len(self.streamdecks) < 1:
-            print("No devices found.")
+            logger.error("No devices found.")
             exit(1)
 
         deck = self.streamdecks[CONFIG["deck_id"]]
 
         if not deck.is_visual():
-            print("Only works with devices that have screens.")
+            logger.error("Only works with devices that have screens.")
             exit(1)
 
         deck.open()
         deck.reset()
+        deck.set_brightness(CONFIG["brightness"])
 
-        print("Opened '{}' device (serial number: '{}', fw: '{}')".format(
+        logger.info("Opened '{}' device (serial number: '{}', fw: '{}')".format(
             deck.deck_type(), deck.get_serial_number(), deck.get_firmware_version()
         ))
 
         if not check_config(CONFIG, deck.key_count()):
             exit(1)
 
-        deck.set_brightness(CONFIG["brightness"])
+        # Event loop to update the keys every second.
+        loop = asyncio.get_event_loop()
+        self.__update_all_keys(loop, deck)
 
-        for button_id, button_config in CONFIG["buttons"].items():
-            self.__update_key_image(button_id, button_config, deck, False)
+        for key in range(0, deck.key_count() ):
+            print("Loading config for key {}".format(key))
+            config = {}
+            if "actions" in CONFIG["keys"][key]:
+                config = CONFIG["keys"][key]["actions"] | CONFIG["actions"]
+                config["duration"] = CONFIG["keys"][key]["duration"]
+                config["label"] = CONFIG["keys"][key]["label"]
+                print(config)
 
-        self.stop_button_id = deck.key_count() - 1
-        self.__update_key_image(self.stop_button_id, CONFIG["stop_button"], deck, False)  # Last button is the stop.
+            self.keys[key] = self.keys[key] = action.Action(CONFIG["keys"][key]["actions"], config)
 
-        # Register callback function for when a key state changes.
+        # Key press callback
         deck.set_key_callback(self.__key_change_callback)
 
         # Wait until all deck handles are closed.
@@ -134,30 +135,28 @@ class Selene:
                 (False, True): "mirrored vertically",
                 (True, True): "mirrored horizontally/vertically",
             }
-            print("Deck {} - {}.".format(index, deck.deck_type()))
-            print("\t - ID: {}".format(deck.id()))
-            print("\t - Serial: '{}'".format(deck.get_serial_number()))
-            print("\t - Firmware Version: '{}'".format(deck.get_firmware_version()))
-            print("\t - Key Count: {} (in a {}x{} grid)".format(
+            logger.info("Deck {} - {}.".format(index, deck.deck_type()))
+            logger.info("\t - ID: {}".format(deck.id()))
+            logger.info("\t - Serial: '{}'".format(deck.get_serial_number()))
+            logger.info("\t - Firmware Version: '{}'".format(deck.get_firmware_version()))
+            logger.info("\t - Key Count: {} (in a {}x{} grid)".format(
                 deck.key_count(),
                 deck.key_layout()[0],
                 deck.key_layout()[1]))
             if deck.is_visual():
-                print("\t - Key Images: {}x{} pixels, {} format, rotated {} degrees, {}".format(
+                logger.info("\t - Key Images: {}x{} pixels, {} format, rotated {} degrees, {}".format(
                     image_format['size'][0],
                     image_format['size'][1],
                     image_format['format'],
                     image_format['rotation'],
                     flip_description[image_format['flip']]))
             else:
-                print("\t - No Visual Output")
+                logger.error("\t - No Visual Output")
 
             deck.close()
 
 
 if __name__ == '__main__':
     selene = Selene()
-    selene.load_plugins(["plugins.echo.Echo()"])
-
     selene.info()
     selene.run()
