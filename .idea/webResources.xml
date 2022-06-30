@@ -6,6 +6,7 @@
         <entryData>
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/selene/assets" />
+            <path value="file://$PROJECT_DIR$/docs" />
           </resourceRoots>
         </entryData>
       </entry>

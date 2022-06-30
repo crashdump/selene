@@ -9,7 +9,7 @@ from StreamDeck.DeviceManager import DeviceManager
 # Internal
 from config import ASSETS_PATH, CONFIG, check_config
 from logger import logger
-import action
+from scene import Scene
 import render
 
 # Plugins
@@ -23,57 +23,52 @@ class Selene:
         self.streamdecks = DeviceManager().enumerate()
         logger.info("Found {} Stream Deck(s).\n".format(len(self.streamdecks)))
 
-        self.keys = {}
+        self.display_refresh = .5  # seconds
+        self.scenes = {}
+        self.scene_active = False
 
-    def __update_all_keys(self, loop, deck):
-        for button_id, button_config in CONFIG["keys"].items():
-            self.__update_key_image(button_id, button_config, deck, False)
-
-        loop.call_later(1, self.__update_all_keys, (loop, deck))
-
-    # Returns styling information for a key based on its name, position and state.
-    def __get_key_style(self, button_id, button_config, state):
-        font = "fonts/{}.ttf".format(CONFIG["font"])
-        icon = "icons/{}.png".format(button_config["icon"]["down"])
-        label = button_config["label"]
-        if state:
-            icon = "icons/{}.png".format(button_config["icon"]["up"])
-
-        # if button_id == self.stop_button_id:
-        #     if self.ticker_stop.state and self.ticker_stop.countdown > 0:
-        #         label = "{} s".format(self.ticker_stop.countdown)
-
-        return {
-            "name": button_id,
-            "icon": os.path.join(ASSETS_PATH, icon),
-            "font": os.path.join(ASSETS_PATH, font),
-            "label": label
-        }
-
-    # Creates a new key image based on the key index, style and current key state
-    # and updates the image on the StreamDeck.
-    def __update_key_image(self, button_id, button_config, deck, state):
-        # Determine what icon and label to use on the generated key.
-        key_style = self.__get_key_style(button_id, button_config, state)
-
-        # Generate the custom key with the requested image and label.
-        image = render.key_image(deck, key_style["icon"], key_style["font"], key_style["label"])
-
-        # Use a scoped-with on the deck to ensure we're the only thread using it right now.
-        with deck:
-            deck.set_key_image(button_id, image)
+    async def __update_keys(self, deck):
+        while True:
+            await asyncio.sleep(self.display_refresh)
+            for button_id, button_config in CONFIG["keys"].items():
+                self.__update_key_image(button_id, button_config, deck, False)
 
     # Prints key state change information, updates rhe key image and performs any
     # associated actions when a key is pressed.
-    def __key_change_callback(self, deck, key, state):
-        logger.info("Deck {} Key {} = {}".format(deck.id(), key, state))
+    def __on_key_change(self, deck, key, pressed):
+        logger.info("Deck {} Key {} = {}".format(deck.id(), key, pressed))
 
         # Update the key image based on the new key state.
-        self.__update_key_image(key, CONFIG["keys"][key], deck, state)
+        self.__update_key_image(key, CONFIG["keys"][key], deck, pressed)
 
-        # Do thing when a key is changing to the pressed state.
+        if pressed:  # Do thing when a key is changing to the pressed state.
+            self.scenes[key].toggle()
+
+    def __stop_all_scenes(self):
+        for scene in self.scenes.values():
+            if scene.get_state():
+                scene.stop()
+
+    # Creates a new key image based on the key index, style and current key state
+    # and updates the image on the StreamDeck.
+    def __update_key_image(self, key_id, key_config, deck, state):
+        # Determine what icon and label to use on the generated key.
+        font = "{}/fonts/{}.ttf".format(ASSETS_PATH, CONFIG["font"])
+        icon = "{}/icons/{}.png".format(ASSETS_PATH, key_config["icon"]["down"])
+        label = key_config["label"]
         if state:
-            self.keys[key].toggle()
+            icon = "{}/icons/{}.png".format(ASSETS_PATH, key_config["icon"]["up"])
+
+        if self.scenes[key_id].get_state():
+            minutes, seconds = divmod(self.scenes[key_id].get_time_remaining(), 60)
+            label = "{}s".format(minutes, seconds)
+            if minutes > 0:
+                label = "{}m{}s".format(minutes, seconds)
+
+        # Use a scoped-with on the deck to ensure we're the only thread using it right now.
+        image = render.key_image(deck, icon, font, label)
+        with deck:
+            deck.set_key_image(key_id, image)
 
     def run(self):
         if len(self.streamdecks) < 1:
@@ -97,11 +92,8 @@ class Selene:
         if not check_config(CONFIG, deck.key_count()):
             exit(1)
 
-        # Event loop to update the keys every second.
-        loop = asyncio.get_event_loop()
-        self.__update_all_keys(loop, deck)
-
-        for key in range(0, deck.key_count() ):
+        # Init the "Action" objects for each key: self.keys[n]
+        for key in range(0, deck.key_count()):
             print("Loading config for key {}".format(key))
             config = {}
             if "actions" in CONFIG["keys"][key]:
@@ -110,17 +102,15 @@ class Selene:
                 config["label"] = CONFIG["keys"][key]["label"]
                 print(config)
 
-            self.keys[key] = self.keys[key] = action.Action(CONFIG["keys"][key]["actions"], config)
+            self.scenes[key] = Scene(CONFIG["keys"][key]["actions"], config)
 
         # Key press callback
-        deck.set_key_callback(self.__key_change_callback)
+        deck.set_key_callback(self.__on_key_change)
 
-        # Wait until all deck handles are closed.
-        for t in threading.enumerate():
-            try:
-                t.join()
-            except RuntimeError:
-                pass
+        # Event loop to update the keys every second.
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.__update_keys(deck))
+        loop.run_forever()
 
     # Prints diagnostic information about a given StreamDeck.
     def info(self):
@@ -160,3 +150,4 @@ if __name__ == '__main__':
     selene = Selene()
     selene.info()
     selene.run()
+

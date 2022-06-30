@@ -2,6 +2,7 @@ import os
 from logger import logger
 
 ASSETS_PATH = os.path.join(os.path.dirname(__file__), "assets")
+CACHE_PATH = "/tmp/selene"
 
 CONFIG = {
     "deck_id": 0,
@@ -16,7 +17,7 @@ CONFIG = {
             "label": "Sunrise",
             "duration": 30,
             "actions": {
-                "hue.Hue()": {
+                "hue.Hue": {
                     "light": "abcd",
                     "brightness": "30"
                 },
@@ -28,10 +29,10 @@ CONFIG = {
                 "down": "relax"
             },
             "label": "Relax",
-            "duration": 10,
+            "duration": 3600,
             "actions": {
-                "echo.Echo()": {
-                    "message": "Hello, world!",
+                "sonos.Sonos": {
+                    "share_link": "https://open.spotify.com/playlist/3yx7DjSural7eASDmd8Ah1",
                 },
             }
         },
@@ -41,9 +42,9 @@ CONFIG = {
                 "down": "sleep"
             },
             "label": "Sleep",
-            "duration": 30,
+            "duration": 90,
             "actions": {
-                "sonos.Sonos()": {
+                "sonos.Sonos": {
                     "share_link": "https://open.spotify.com/playlist/7J2yJ5L2SBDyaTwmByhnxC",
                 },
             }
@@ -77,13 +78,13 @@ CONFIG = {
         }
     },
     "actions": {
-        "sonos.Sonos()": {
+        "sonos.Sonos": {
             "ip": "192.168.1.229",
-            "volume": 20,
+            "volume": 40,
             "status_light": True,
         },
-        "hue.Hue()": {
-            "foo": "bar"
+        "hue.Hue": {
+            "bridge_ip": "192.168.1"
         }
     },
 }

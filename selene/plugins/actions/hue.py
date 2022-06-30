@@ -3,9 +3,10 @@ import plugins
 
 class Hue:
     @plugins.hookimpl
-    def on(self, config) -> bool:
+    def on(self, config):
         return True
 
     @plugins.hookimpl
-    def off(self, config) -> bool:
+    def off(self, config):
         return True
+

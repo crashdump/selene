@@ -7,12 +7,16 @@ from soco.plugins.sharelink import ShareLinkPlugin
 class Sonos:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.plugin_name = "sonos.Sonos"
         self.ip = ""
         self.status_light = True
         self.volume = 20
         self.share_link = "https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT?si=7209bd113488449a"
 
-    def __config(self, config):
+    def __load_config(self, config):
+        config = config[self.plugin_name]
+        self.logger.debug(config)
+
         if "share_link" in config:
             self.share_link = config["share_link"]
         else:
@@ -37,8 +41,7 @@ class Sonos:
 
     @plugins.hookimpl
     def on(self, config):
-        self.logger.debug(config)
-        self.__config(config)
+        self.__load_config(config)
 
         speaker = self.__get_soco()
         speaker.clear_queue()
@@ -47,13 +50,15 @@ class Sonos:
         speaker.play()
 
         self.logger.info("Playing {} on {}".format(self.share_link, self.ip))
-        self.logger.info(speaker.speaker_info)
+        return speaker.get_current_transport_info()
 
     @plugins.hookimpl
     def off(self, config):
-        self.__config(config)
+        self.__load_config(config)
+
         speaker = self.__get_soco()
         speaker.stop()
 
         self.logger.info("Stopped music on {}".format(self.ip))
+        return speaker.get_current_transport_info()
 
