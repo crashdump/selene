@@ -1,6 +1,6 @@
-# MacOS
+# Misc
 .DS_Store
-
+.idea
 .coverage
 
 # Byte-compiled / optimized / DLL files
