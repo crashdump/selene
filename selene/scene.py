@@ -12,7 +12,7 @@ class Scene:
         self.timer_start_time = None
 
         self.state = False
-        self.actions = []  # TODO: there can be multiple actions.
+        self.actions = []
         self.config = config
 
         self.plugin = pluggy.PluginManager("selene_v1")
@@ -24,23 +24,25 @@ class Scene:
             logger.warning("No actions registered with key.")
 
         for action in actions:
-            plugin = "plugins.actions.{}".format(action)
+            plugin = f"plugins.actions.{action}"
             print(plugin)
             self.plugin.register(eval(plugin)())
 
     def start(self):
-        self.timer = threading.Timer(self.timer_duration, self.stop)
-        self.timer.start()
-        self.timer_start_time = datetime.now()
-        self.plugin.hook.on(config=self.config)
-        self.state = True
-        logger.debug("Action started for {}s.".format(self.timer_duration))
+        if self.timer_duration > 0:
+            self.timer = threading.Timer(self.timer_duration, self.stop)
+            self.timer.start()
+            self.timer_start_time = datetime.now()
+            self.plugin.hook.on(config=self.config["actions"])
+            self.state = True
+            logger.debug(f"Action started for {self.timer_duration}s.")
+        logger.debug("We don't start the timer as duration configured to 0.")
 
     def stop(self):
-        self.plugin.hook.off(config=self.config)
+        self.plugin.hook.off(config=self.config["actions"])
         self.state = False
         self.timer.cancel()
-        logger.debug("Action stopped after {}s.".format(self.timer_duration))
+        logger.debug(f"Action stopped after {self.timer_duration}s.")
 
     def toggle(self):
         if self.state:

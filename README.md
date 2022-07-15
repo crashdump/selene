@@ -15,6 +15,8 @@ sharing it.
 
 Turn on (or off) lights; a timer can be specified to revert after a while.
 
+You will need a user id on the Bridge, you can follow the steps [here](https://developers.meethue.com/develop/get-started-2/#so-lets-get-started) to get it. 
+
 ## Spotify
 
 Starts a playlist; a timer can be specified to turn the music off after a while.
@@ -43,4 +45,12 @@ sudo udevadm control --reload-rules`
 
 # How to run
 
+1. Configure
+
+Tweak and copy the example configuration file from `selene/config_default.yaml` to `$XDG_CONFIG_HOME/Selene/config.yaml`
+
+2. Start
+
 `poetry run`
+
+3. Press a button and enjoy!

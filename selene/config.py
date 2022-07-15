@@ -1,112 +1,87 @@
 import os
+import confuse
 from logger import logger
 
-ASSETS_PATH = os.path.join(os.path.dirname(__file__), "assets")
-CACHE_PATH = "/tmp/selene"
 
-CONFIG = {
-    "deck_id": 0,
-    "brightness": 30,
-    "font": "roboto-regular",
-    "keys": {
-        0: {
-            "icon": {
-                "up": "sunrise",
-                "down": "sunrise"
-            },
-            "label": "Sunrise",
-            "duration": 30,
-            "actions": {
-                "hue.Hue": {
-                    "light": "abcd",
-                    "brightness": "30"
-                },
-            }
-        },
-        1: {
-            "icon": {
-                "up": "relax",
-                "down": "relax"
-            },
-            "label": "Relax",
+class Config:
+    def __init__(self):
+        self.path_assets = os.path.join(os.path.dirname(__file__), "assets")
+        self.path_cache = "/tmp/selene"
+        self.deck_id = 0
+        self.brightness = 30
+        self.__font = ""
+        self.__keys = {}
+        self.__actions = []
+        self.__default_config = {
+            "actions": {},
             "duration": 3600,
-            "actions": {
-                "sonos.Sonos": {
-                    "share_link": "https://open.spotify.com/playlist/3yx7DjSural7eASDmd8Ah1",
-                },
-            }
-        },
-        2: {
-            "icon": {
-                "up": "sleep",
-                "down": "sleep"
-            },
-            "label": "Sleep",
-            "duration": 90,
-            "actions": {
-                "sonos.Sonos": {
-                    "share_link": "https://open.spotify.com/playlist/7J2yJ5L2SBDyaTwmByhnxC",
-                },
-            }
-        },
-        3: {
-            "icon": {
-                "up": "empty",
-                "down": "empty"
-            },
-            "duration": 0,
             "label": "",
-            "actions": {}
-        },
-        4: {
-            "icon": {
-                "up": "empty",
-                "down": "empty"
-            },
-            "label": "",
-            "duration": 0,
-            "actions": {}
-        },
-        5: {
-            "icon": {
-                "up": "empty",
-                "down": "empty"
-            },
-            "label": "",
-            "duration": 0,
-            "actions": {}
+            "icon": "empty",
         }
-    },
-    "actions": {
-        "sonos.Sonos": {
-            "ip": "192.168.1.229",
-            "volume": 40,
-            "status_light": True,
-        },
-        "hue.Hue": {
-            "bridge_ip": "192.168.1"
-        }
-    },
-}
 
+    def load(self):
+        config = confuse.Configuration('Selene', __name__)
+        try:
+            if "config.selene.cdfr.net/v1" != config["api"].get(str):
+                logger.error("configuration api unknown")
+                exit(1)
+            self.__keys = config["keys"].get(list)
+            self.__actions = config["actions"].get(dict)
+            self.__font = config["font"].get(str)
+            self.deck_id = config["deck_id"].get(int)
+            self.brightness = config["brightness"].get(int)
+        except confuse.exceptions.NotFoundError:
+            logger.error("configuration file likely missing")
+            exit(1)
 
-def check_config(config: dict, deck_button_count: int) -> bool:
-    keys = ["deck_id", "brightness", "font", "keys"]
-    for key in keys:
-        if key not in config.keys():
-            logger.error("Please configure `{}`".format(key))
+    def get_keys(self) -> dict:
+        return self.__keys
+
+    def get_key(self, key: int) -> dict:
+        try:
+            key_config = self.__keys[key]
+            for action in key_config["actions"].keys():
+                key_config["actions"][action] = key_config["actions"][action] | self.__actions[action]
+            return key_config
+        except IndexError:
+            return self.__default_config
+
+    def get_key_actions(self, key: int) -> dict:
+        try:
+            return self.__keys[key]["actions"].keys()
+        except IndexError:
+            return {}
+
+    def get_key_duration(self, key: int) -> int:
+        try:
+            return self.__keys[key]["duration"]
+        except IndexError:
+            return 3600
+
+    def get_key_label(self, key: int) -> str:
+        return self.__keys[key]["label"]
+
+    def get_key_icon_path(self, key_id: int) -> str:
+        return f"{self.path_assets}/icons/{self.get_key(key_id)['icon']}.png"
+
+    def get_font_path(self) -> str:
+        return f"{self.path_assets}/fonts/{self.__font}.ttf"
+
+    def is_valid(self) -> bool:
+        if self.__font == "":
+            logger.error("Font not configured")
             return False
 
-    if len(config["keys"]) != deck_button_count:
-        logger.error("This deck has {} keys, please configure them all.".format(deck_button_count))
-        return False
-
-    for k, v in config["keys"].items():
-        if "duration" not in v:
-            logger.error("Please configure `duration` for key {}".format(k))
-            return False
-        if "icon" not in v:
-            logger.error("Please configure `icon` for key {}".format(k))
+        if len(self.__keys) == 0:
+            logger.error("Keys not configured")
             return False
 
-    return True
+        for key in self.__keys:
+            if "duration" not in key:
+                logger.error(f"Please configure `duration` for key {key}")
+                return False
+            if "icon" not in key:
+                logger.error(f"Please configure `icon` for key {key}")
+                return False
+
+        return True

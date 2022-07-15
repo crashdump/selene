@@ -16,10 +16,8 @@ class Echo:
     def on(self, config):
         config = self.__config(config)
         logger.info("Echo on: {}".format(config["message"]))
-        return
 
     @plugins.hookimpl
     def off(self, config):
         config = self.__config(config)
         logger.info("Echo off: {}".format(config["message"]))
-        return

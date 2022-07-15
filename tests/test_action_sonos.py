@@ -1,9 +1,9 @@
 import time
 from unittest import TestCase
 import plugins.actions.sonos
+import selene.logger
 
-
-class Sonos(TestCase):
+class TestSonos(TestCase):
     def test_on(self):
         sonos = plugins.actions.sonos.Sonos()
         result = sonos.on(config={
@@ -16,8 +16,8 @@ class Sonos(TestCase):
         })
 
         print(result)
-        assert result["current_transport_status"] == "OK"
-        assert result["current_transport_state"] in ["TRANSITIONING", "PLAYING"]
+        self.assertEqual(result["current_transport_status"], "OK")
+        self.assertIn(result["current_transport_state"], ["TRANSITIONING", "PLAYING"])
 
     def test_off(self):
         sonos = plugins.actions.sonos.Sonos()
@@ -31,7 +31,7 @@ class Sonos(TestCase):
         })
 
         print(result)
-        assert result["current_transport_status"] == "OK"
-        assert result["current_transport_state"] in ["TRANSITIONING", "STOPPED"]
+        self.assertEqual(result["current_transport_status"], "OK")
+        self.assertIn(result["current_transport_state"], ["TRANSITIONING", "STOPPED"])
 
 

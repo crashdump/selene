@@ -16,15 +16,18 @@ keywords = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
+confuse = "^1.7.0"
 streamdeck = "^0.9.1"
 Pillow = "^9.1.1"
 pluggy = "^1.0.0"
 soco = "^0.28.0"
+hue-api = "^0.4.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
 coverage = "^6.4.1"
 pytest-cov = "^3.0.0"
+pylint = "^2.14.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

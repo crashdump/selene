@@ -1,0 +1,55 @@
+api: config.selene.cdfr.net/v1
+deck_id: 0
+brightness: 30
+font: roboto-regular
+keys:
+  - icon: sunrise
+    label: Sunrise
+    duration: 30
+    actions:
+      sonos.Sonos:
+        share_link: https://open.spotify.com/playlist/3yx7DjSural7eASDmd8Ah1
+      hue.Hue:
+        lights:
+          - id: 9
+            state: off
+  - icon: relax
+    label: Relax
+    duration: 3600
+    actions:
+      sonos.Sonos:
+        share_link: https://open.spotify.com/playlist/3yx7DjSural7eASDmd8Ah1
+      hue.Hue:
+        lights:
+        - id: 9
+          state: on
+  - icon: sleep
+    label: Sleep
+    duration: 90
+    actions:
+      sonos.Sonos:
+        share_link: https://open.spotify.com/playlist/3yx7DjSural7eASDmd8Ah1
+      hue.Hue:
+        lights:
+          id: 9
+          state: on
+  - icon: stop
+    label: Lights off
+    duration: 0
+    actions:
+      sonos.Sonos:
+        state: off
+      hue.Hue:
+        lights:
+          id: 4
+          state: off
+actions:
+  sonos.Sonos:
+    ip: 192.168.1.229
+    volume: 40
+    status_light: True
+  hue.Hue:
+    ip: 192.168.1.22
+    secret: HUE_SECRET_LIVES_HERE
+  pro_breeze.Dehumidifier:
+    ip: 192.168.1.56

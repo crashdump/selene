@@ -1,0 +1,16 @@
+deck_id: 0
+brightness: 30
+font: roboto-regular
+keys:
+  - icon: empty
+  - icon: empty
+actions:
+  sonos.Sonos:
+    ip: 192.168.1.12
+    volume: 40
+    status_light: True
+  hue.Hue:
+    ip: 192.168.1.34
+    secret: XXX
+  pro_breeze.Dehumidifier:
+    ip: 192.168.1.56
